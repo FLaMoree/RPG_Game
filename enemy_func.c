@@ -1,68 +1,11 @@
 #include "functions.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include <string.h>
-
-void attack(Entity *attacker, Entity *target)
-{
-    int possible_crit_chance = (rand() % 100) + 1;
-    int temporary_max_dmg = attacker->max_dmg;
-    int temporary_min_dmg = attacker->min_dmg;
-
-    if ( possible_crit_chance <= attacker->crit_chance )
-    {
-        attacker->max_dmg *= 2;
-        attacker->min_dmg *= 2;
-        printf("CCCCCC CRRRIIIIIT!!\n");
-    }
-    else
-    {
-        attacker->crit_chance += 1;
-    }
-    int clear_damage = (rand() % (attacker->max_dmg - attacker->min_dmg + 1 ) + attacker->min_dmg) - target->armr;
-    if ( clear_damage < 0 )
-    {
-        clear_damage = 0;
-    }
-    target->hp -= clear_damage;
-    if ( target->hp < 0 )
-    {
-        target->hp = 0;
-    }
-    attacker->max_dmg = temporary_max_dmg;
-    attacker->min_dmg = temporary_min_dmg;
-}
-
-
-int loot(int *chance, Entity *player, Entity *enemy)
-{
-    int basic_chance = 10, potions_amount;
-
-    if ( (rand() % 100) + 1 <= *chance ) // rand() % 100) + 1 - from 1 to *chance. Without '+ 1' it might be from 0 to *chance - 1
-    {
-        player->potions++;
-        printf("You got 1 potion");
-        *chance = basic_chance;
-
-        if ( *chance < basic_chance )
-        {
-            *chance = basic_chance;
-        }
-        return 0;
-    }
-    else
-    {
-        *chance += enemy->loot_weight;
-        return 1;
-    }
-}
-
+#include <stdlib.h>
 
 void spawn_enemy(Entity *enemy, int floor)
 {
     int pick_type_of_enemy;
-    pick_type_of_enemy = 1;
+    pick_type_of_enemy = rand() % 2;
     switch (pick_type_of_enemy)
     {
         case SPIDER: 
@@ -98,9 +41,4 @@ void spawn_enemy(Entity *enemy, int floor)
     enemy->min_dmg = enemy->base_min_dmg + (2 * (floor - 1)); // Every floor enemy`s damage is increasing 
     enemy->max_dmg = enemy->base_max_dmg + (2 * (floor - 1)); //                      by 2 for each floor
     enemy->armr = enemy->base_armr + (floor / 2); // Every 2 floors armor is increasing by 1
-}
-
-void free_mem(Entity *target)
-{
-    free(target->name);
 }
